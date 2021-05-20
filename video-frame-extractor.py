@@ -10,40 +10,10 @@ root = Tk()
 root.title('Image extractor')
 # root.geometry("500x450")
 
+# variables for section 1: Loading files section
 filenamespath_list = [] # List to store filenamespath
-filenames_list = [] # List to store filenames
 
-# functions for section 1: Loading files section
-def loadFiles():
-    clear() # clear the texts first if there is any
-
-    root.filenames =  filedialog.askopenfilenames(initialdir = "C:/Users/Sandeep/Desktop/Geyser/Strokkur_Sony_130320", title = "Select file", filetypes = (("mp4","*.mp4"),("avi","*.avi"),("mov","*.mov"))) # Load the video files
-
-    filenamespath_list = list(root.filenames) # List to store filepaths
-
-    filenames_list = [] # List to store filenames
-           
-    # Extract filenames from filepaths
-    filenames_list += [Path(i).stem for i in filenamespath_list]
-
-    # Makes each line for the paths
-    filenamespath_list = '\n'.join([i for i in filenamespath_list])
-    
-    # update file list label
-    file_list = Label(loading_frame, text = filenamespath_list, font = ('Consolas', 16))
-    file_list.grid(row = 0, column = 1)
-
-    print(filenamespath_list)
-
-
-def clear():
-    file_list = Label(loading_frame, text = '', padx = 300, pady = 60, bd = 1)
-    file_list.grid(row = 0, column = 1)
-    # filenamespath_list = [] # List to store filepaths
-    # filenames_list = [] # List to store filenames
-
-
-# functions for section 2: Extraction options
+# variables for section 2: Extraction options
 images_options = ['png', 'jpg'] # options for output images
 digit_options = ['1', '2', '3'] # options for digit for the filenames
 
@@ -56,11 +26,48 @@ image_output_selection.set(images_options[0]) # default selection for image outp
 digit_number_selection = IntVar() # integer variable for digit number selection
 digit_number_selection.set(digit_options[1]) # default selection for digit number
 
+# functions for section 1: Loading files section
+def loadFiles():
+    global filenamespath_list
+
+    clear() # clear the texts first if there is any
+
+    root.filenames =  filedialog.askopenfilenames(initialdir = "C:/Users/Sandeep/Desktop/Geyser/Strokkur_Sony_130320", title = "Select file", filetypes = (("mp4","*.mp4"),("avi","*.avi"),("mov","*.mov"))) # Load the video files
+
+    filenamespath_list = list(root.filenames) # List to store filepaths
+
+    filenames_list = [] # List to store filenames
+           
+    # Extract filenames from filepaths
+    # filenames_list += [Path(i).stem for i in filenamespath_list]
+
+    # Makes each line for the paths
+    filenamespath = '\n'.join([i for i in filenamespath_list])
+    
+    # update file list label
+    file_list = Label(loading_frame, text = filenamespath, font = ('Consolas', 16))
+    file_list.grid(row = 0, column = 1)
+
+
+def clear():
+    file_list = Label(loading_frame, text = '', padx = 300, pady = 60, bd = 1)
+    file_list.grid(row = 0, column = 1)
+    filenamespath_list = [] # List to store filepaths
+    filenames_list = [] # List to store filenames
+
 
 # functions for section 3: Start the extraction
-def execution(fps, image_output_selection, digit_number_selection):
-    # subprocess.run('mkdir')
-    print(filenamespath_list)
+def execution(fps, image_output_selection, digit_number_selection, filenamespath_list):
+    path = os.getcwd() # Get current working directory
+    ffmpeg_plugin_path = path + "\\bin\\ffmpeg.exe"
+
+    # Filename with path (without extensions)
+    for filenamespath in filenamespath_list:
+        filename = Path(filenamespath).stem # Extract filename from file path
+        filename_with_path = filenamespath[0:-4] # Extract file path without extensions
+        if os.path.isdir(filename_with_path) == False:
+            os.mkdir(filename_with_path)
+        subprocess.run([ffmpeg_plugin_path, '-i', filenamespath, '-r', str(fps), filename_with_path + '/' + filename + '_%0' + str(digit_number_selection) + 'd.' + image_output_selection])
 
 def start():
     if image_output_selection.get() == 'jpg':
@@ -71,14 +78,14 @@ def start():
                             'Output format = ' + image_output_selection.get() + '\n'
                             'Number of digits to suffix = ' + str(digit_number_selection.get()) + '\n')
             if final_response == 1:
-                execution(fps, image_output_selection, digit_number_selection)
+                execution(fps.get(), image_output_selection.get(), digit_number_selection.get(), filenamespath_list)
     else:
         final_response = messagebox.askyesno('Is this selection correct?',
                             'Number of frames = ' + str(fps.get()) + '\n'
                             'Output format = ' + image_output_selection.get() + '\n'
                             'Number of digits to suffix = ' + str(digit_number_selection.get()) + '\n')
         if final_response == 1:
-            execution(fps, image_output_selection, digit_number_selection)
+            execution(fps.get(), image_output_selection.get(), digit_number_selection.get(), filenamespath_list)
 
 
 
