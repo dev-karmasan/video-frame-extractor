@@ -3,7 +3,6 @@ from pathlib import Path
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
-from tkinter.scrolledtext import ScrolledText
 import subprocess
 
 root = Tk()
@@ -32,7 +31,7 @@ def loadFiles():
 
     clear() # clear the texts first if there is any
 
-    root.filenames =  filedialog.askopenfilenames(initialdir = "C:/Users/Sandeep/Desktop/Geyser/Strokkur_Sony_130320", title = "Select file", filetypes = (("mp4","*.mp4"),("avi","*.avi"),("mov","*.mov"))) # Load the video files
+    root.filenames =  filedialog.askopenfilenames(title = "Select file", filetypes = (("mp4","*.mp4"),("avi","*.avi"),("mov","*.mov"))) # Load the video files
 
     filenamespath_list = list(root.filenames) # List to store filepaths
 
