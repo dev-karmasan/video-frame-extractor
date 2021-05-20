@@ -7,7 +7,6 @@ import subprocess
 
 root = Tk()
 root.title('Image extractor')
-# root.geometry("500x450")
 
 # variables for section 1: Loading files section
 filenamespath_list = [] # List to store filenamespath
@@ -31,7 +30,8 @@ def loadFiles():
 
     clear() # clear the texts first if there is any
 
-    root.filenames =  filedialog.askopenfilenames(title = "Select file", filetypes = (("mp4","*.mp4"),("avi","*.avi"),("mov","*.mov"))) # Load the video files
+    # Load the video files
+    root.filenames =  filedialog.askopenfilenames(title = "Select file", filetypes = (("mp4","*.mp4"),("avi","*.avi"),("mov","*.mov"))) 
 
     filenamespath_list = list(root.filenames) # List to store filepaths
 
@@ -47,8 +47,8 @@ def loadFiles():
 
 
 def clear():
-    file_list.configure(state = 'normal')
-    file_list.delete("1.0", "end")
+    file_list.configure(state = 'normal') # set back the state of text box to normal
+    file_list.delete("1.0", "end") # clear the textbox
     filenamespath_list = [] # List to store filepaths
     filenames_list = [] # List to store filenames
 
@@ -56,7 +56,7 @@ def clear():
 ## functions for section 3: Start the extraction
 def execution(fps, image_output_selection, digit_number_selection, filenamespath_list):
     path = os.getcwd() # Get current working directory
-    ffmpeg_plugin_path = path + "\\bin\\ffmpeg.exe"
+    ffmpeg_plugin_path = path + "\\bin\\ffmpeg.exe" # path to plugin
 
     # Filename with path (without extensions)
     for filenamespath in filenamespath_list:
@@ -64,10 +64,7 @@ def execution(fps, image_output_selection, digit_number_selection, filenamespath
         filename_with_path = filenamespath[0:-4] # Extract file path without extensions
         if os.path.isdir(filename_with_path) == False:
             os.mkdir(filename_with_path)
-        subprocess.run([ffmpeg_plugin_path, '-i', filenamespath, '-r', str(fps), filename_with_path + '/' + filename + '_%0' + str(digit_number_selection) + 'd.' + image_output_selection])
-
-    subprocess.terminate()
-    messagebox.info('Process completed')
+        subprocess.run([ffmpeg_plugin_path, '-i', filenamespath, '-r', str(fps), filename_with_path + '/' + filename + '_%0' + str(digit_number_selection) + 'd.' + image_output_selection]) # command to extract the images
 
 def start():
     if image_output_selection.get() == 'jpg':
@@ -86,8 +83,6 @@ def start():
                             'Number of digits to suffix = ' + str(digit_number_selection.get()) + '\n')
         if final_response == 1:
             execution(fps.get(), image_output_selection.get(), digit_number_selection.get(), filenamespath_list)
-
-
 
 
 ##-------------------------------------------------------------------------------
@@ -112,6 +107,7 @@ button_load.grid(row = 1, column = 0, padx = 5, pady = 5)
 button_clear = Button(loading_frame, text = 'Clear', padx = 40, pady = 20, command = clear)
 button_clear.grid(row = 1, column = 2, padx = 5, pady = 5)
 
+
 ##-----------------------------------------------------------
 # Section 2: Extraction options
 options_frame = LabelFrame(root, text = 'select your options', padx = 80, pady = 20)
@@ -119,7 +115,7 @@ options_frame.pack(padx = 5, pady = 5)
 
 # Number of frames per second
 Label(options_frame, text = 'Frames per second', padx = 40, pady = 30, bd = 1).grid(row = 0, column = 0)
-fps_number = Entry(options_frame, text = "Enter desired fps", textvariable = fps)
+fps_number = Entry(options_frame, text = "Enter desired fps", textvariable = fps, width = 5, justify = 'center')
 fps_number.grid(row = 1, column = 0)
 
 # Select desired output format
@@ -140,7 +136,6 @@ execution_frame.pack(padx = 5, pady = 5)
 
 button_start = Button(execution_frame, text = 'Start', padx = 40, pady = 20, command = start)
 button_start.grid(row = 0, column = 0)
-
 
 
 root.mainloop()
